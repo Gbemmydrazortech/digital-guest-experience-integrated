@@ -1,12 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import {
+  CheckCircle2,
+  XCircle,
+  Clock3,
+  LoaderCircle,
+  RefreshCw,
+  LayoutDashboard,
+  Search
+} from "lucide-react";
 import { verifyPayment } from "../services/api";
 
- type PaymentState = "verifying" | "success" | "pending" | "failed";
+type PaymentState =
+  | "verifying"
+  | "success"
+  | "pending"
+  | "failed"
+  | "error";
 
 export default function PaymentResult() {
   const [searchParams] = useSearchParams();
-  const reference = searchParams.get("reference") || searchParams.get("trxref");
+  const reference =
+    searchParams.get("reference") || searchParams.get("trxref");
+
   const [status, setStatus] = useState<PaymentState>("verifying");
   const [message, setMessage] = useState("");
   const [bookingReference, setBookingReference] = useState("");
@@ -18,55 +34,146 @@ export default function PaymentResult() {
     async function checkPayment() {
       if (!reference) {
         setStatus("pending");
-        setMessage("No Paystack reference was supplied. This is normal when opening this page without completing a payment.");
+        setMessage(
+          "No payment reference was supplied. If you have made a payment, please contact the hotel for assistance."
+        );
         return;
       }
 
       setStatus("verifying");
       setMessage("");
+
       try {
         const response = await verifyPayment(reference);
         const result = response.data;
+
         if (!active) return;
+
         setBookingReference(result.bookingReference || "");
 
-        if (result.paymentStatus === "successful" && result.bookingStatus === "confirmed") {
+        if (
+          result.paymentStatus === "successful" &&
+          result.bookingStatus === "confirmed"
+        ) {
           setStatus("success");
-          setMessage("Your payment has been verified and your booking is confirmed.");
-        } else if (result.paymentStatus === "pending" || result.bookingStatus === "pending_payment") {
-          setStatus("pending");
-          setMessage("Your payment is not confirmed yet. Please check again shortly.");
-        } else {
+          setMessage(
+            "Your payment has been verified successfully and your booking is confirmed. Thank you for choosing GrandStay."
+          );
+        } else if (
+          result.paymentStatus === "failed" ||
+          ["failed", "cancelled", "expired"].includes(
+            String(result.bookingStatus).toLowerCase()
+          )
+        ) {
           setStatus("failed");
-          setMessage("We could not confirm this payment. Please contact the hotel before trying to pay again.");
+          setMessage(
+            "Your payment was not successful or your booking could not be confirmed. Please contact the hotel before attempting another payment."
+          );
+        } else {
+          setStatus("pending");
+          setMessage(
+            "Your payment is still being processed. Please check again shortly. Do not make another payment while this transaction is being verified."
+          );
         }
       } catch (error) {
         if (!active) return;
-        setStatus("failed");
-        setMessage(error instanceof Error ? error.message : "Payment verification could not be completed.");
+
+        setStatus("error");
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "We could not reach the payment verification service. Your payment status is not yet known."
+        );
       }
     }
 
     checkPayment();
-    return () => { active = false; };
+
+    return () => {
+      active = false;
+    };
   }, [reference, attempt]);
 
-  const heading = status === "success" ? "Booking confirmed" : status === "verifying" ? "Verifying payment" : status === "pending" ? "Payment pending" : "Payment not confirmed";
+  const content = {
+    verifying: {
+      icon: <LoaderCircle size={54} className="payment-spinner" />,
+      heading: "Verifying your payment",
+      label: "Please wait"
+    },
+    success: {
+      icon: <CheckCircle2 size={58} />,
+      heading: "Booking confirmed!",
+      label: "Payment successful"
+    },
+    pending: {
+      icon: <Clock3 size={58} />,
+      heading: "Payment pending",
+      label: "Awaiting confirmation"
+    },
+    failed: {
+      icon: <XCircle size={58} />,
+      heading: "Payment unsuccessful",
+      label: "Transaction not confirmed"
+    },
+    error: {
+      icon: <RefreshCw size={58} />,
+      heading: "Unable to verify payment",
+      label: "Verification interrupted"
+    }
+  }[status];
 
   return (
-    <section style={{ maxWidth: 680, margin: "48px auto", padding: 24, textAlign: "center" }}>
-      <div style={{ fontSize: 48, marginBottom: 12 }} aria-hidden="true">
-        {status === "success" ? "✓" : status === "failed" ? "!" : "…"}
+    <section className="payment-result-page">
+      <div className={`payment-result-card payment-${status}`}>
+        <div className="payment-result-icon" aria-hidden="true">
+          {content.icon}
+        </div>
+
+        <p className="eyebrow">GRANDSTAY PAYMENT</p>
+        <h1>{content.heading}</h1>
+        <span className="payment-status-label">{content.label}</span>
+
+        <p className="payment-result-message" role="status">
+          {message ||
+            "Please wait while we confirm your transaction with the booking server."}
+        </p>
+
+        {bookingReference && (
+          <div className="payment-booking-reference">
+            <span>Booking reference</span>
+            <strong>{bookingReference}</strong>
+          </div>
+        )}
+
+        {(status === "pending" || status === "error") && reference && (
+          <button
+            type="button"
+            className="primary-button payment-retry-button"
+            onClick={() => setAttempt((value) => value + 1)}
+          >
+            <RefreshCw size={17} />
+            Check payment again
+          </button>
+        )}
+
+        <div className="payment-result-actions">
+          <Link to="/" className="primary-button">
+            <LayoutDashboard size={18} />
+            Return to Dashboard
+          </Link>
+
+          <Link to="/room-search" className="text-link">
+            <Search size={17} />
+            Explore Rooms
+          </Link>
+        </div>
+
+        {status === "failed" && (
+          <p className="payment-support-note">
+            Need assistance? Please contact the hotel support team.
+          </p>
+        )}
       </div>
-      <h1>{heading}</h1>
-      <p role="status">{message || "Please wait while we confirm your transaction with the booking server."}</p>
-      {bookingReference && <p><strong>Booking reference:</strong> {bookingReference}</p>}
-      {status === "pending" && reference && (
-        <button type="button" onClick={() => setAttempt((value) => value + 1)} style={{ margin: 12, padding: "10px 18px", cursor: "pointer" }}>
-          Check again
-        </button>
-      )}
-      <p><Link to="/room-search">Return to room search</Link></p>
     </section>
   );
 }

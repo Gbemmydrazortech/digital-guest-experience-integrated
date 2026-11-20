@@ -54,7 +54,7 @@ function Booking() {
 
         {bookings.map((booking) => (
           <div className="booking-card" key={booking.id}>
-            <div className="booking-image">🛏️</div>
+            <div className="booking-image"><img src="https://tokyo-park.net/wp-content/uploads/shangri-la-tokyo-tokyo-updated-prices-8-700x467.jpg" alt="Illustrative deluxe hotel room" /></div>
 
             <div className="booking-details">
               <span className="confirmed-label">Featured room</span>

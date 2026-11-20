@@ -1,3 +1,4 @@
+import { Menu, X } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -85,7 +86,7 @@ function Navbar() {
           }
           onClick={() => setMenuOpen((previous) => !previous)}
         >
-          {menuOpen ? "×" : "☰"}
+          {menuOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
       </div>
 

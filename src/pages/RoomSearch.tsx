@@ -1,3 +1,4 @@
+import { Building2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
@@ -228,7 +229,7 @@ function RoomSearch() {
                       alt={room.name}
                     />
                   ) : (
-                    <div className="room-card-icon">🏨</div>
+                    <div className="room-card-icon"><Building2 size={38} strokeWidth={1.6} /></div>
                   )}
 
                   <div className="room-card-content">

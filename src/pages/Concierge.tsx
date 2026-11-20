@@ -1,8 +1,18 @@
+import { Utensils, Sparkles, Wrench, Shirt, BedDouble, CarFront, type LucideIcon } from "lucide-react";
 
 import { useState, type FormEvent } from "react";
 import { serviceOptions } from "../data/mockData";
 import type { ServiceRequest } from "../types";
 import StatusBadge from "../components/StatusBadge";
+
+const serviceIcons: Record<string, LucideIcon> = {
+  utensils: Utensils,
+  sparkles: Sparkles,
+  wrench: Wrench,
+  shirt: Shirt,
+  bed: BedDouble,
+  car: CarFront
+};
 
 interface ConciergeProps {
   requests: ServiceRequest[];
@@ -73,7 +83,7 @@ function Concierge({ requests, onAddRequest }: ConciergeProps) {
                 setMessageType("");
               }}
             >
-              <span className="service-icon">{item.icon}</span>
+              <span className="service-icon">{(() => { const Icon = serviceIcons[item.icon]; return Icon ? <Icon size={25} strokeWidth={1.8} /> : null; })()}</span>
               <strong>{item.name}</strong>
               <p>{item.description}</p>
               {service === item.name && (

@@ -1,3 +1,4 @@
+import { Hotel } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Button from "../components/Button";
@@ -118,7 +119,7 @@ function BookingConfirmation() {
 
         <div className="confirmation-details">
           <div className="confirmation-room">
-            <span className="service-icon">🏨</span>
+            <span className="service-icon"><Hotel size={25} strokeWidth={1.8} /></span>
             <h2>{room.name}</h2>
             <p>{room.description}</p>
           </div>

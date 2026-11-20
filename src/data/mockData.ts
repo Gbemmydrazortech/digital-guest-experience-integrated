@@ -47,31 +47,31 @@ export const serviceOptions: ServiceOption[] = [
   {
     name: "Room Service",
     description: "Request food and drinks.",
-    icon: "🍽️"
+    icon: "utensils"
   },
   {
     name: "Housekeeping",
     description: "Request room cleaning.",
-    icon: "🧹"
+    icon: "sparkles"
   },
   {
     name: "Maintenance",
     description: "Report a room issue.",
-    icon: "🛠️"
+    icon: "wrench"
   },
   {
     name: "Laundry",
     description: "Request laundry services.",
-    icon: "👔"
+    icon: "shirt"
   },
   {
     name: "Extra Amenities",
     description: "Request additional room items.",
-    icon: "🛏️"
+    icon: "bed"
   },
   {
     name: "Transport",
     description: "Request transport assistance.",
-    icon: "🚘"
+    icon: "car"
   }
 ];

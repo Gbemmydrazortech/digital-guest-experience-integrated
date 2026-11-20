@@ -1,12 +1,13 @@
 
 import { useState } from "react";
+import { Coffee, BedDouble, Gift, type LucideIcon } from "lucide-react";
 
 interface Reward {
   id: number;
   name: string;
   description: string;
   points: number;
-  icon: string;
+  icon: LucideIcon;
 }
 
 const rewards: Reward[] = [
@@ -15,21 +16,21 @@ const rewards: Reward[] = [
     name: "Complimentary Breakfast",
     description: "Enjoy a complimentary breakfast during your stay.",
     points: 1000,
-    icon: "☕",
+    icon: Coffee,
   },
   {
     id: 2,
     name: "Room Upgrade",
     description: "Upgrade your room subject to availability.",
     points: 2000,
-    icon: "🛏️",
+    icon: BedDouble,
   },
   {
     id: 3,
     name: "Welcome Gift",
     description: "Receive a special welcome gift.",
     points: 1500,
-    icon: "🎁",
+    icon: Gift,
   },
 ];
 
@@ -124,7 +125,7 @@ function Rewards() {
 
             return (
               <div className="service-card reward-item" key={reward.id}>
-                <span className="service-icon">{reward.icon}</span>
+                <span className="service-icon"><reward.icon size={25} strokeWidth={1.8} /></span>
 
                 <strong>{reward.name}</strong>
 
