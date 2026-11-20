@@ -7,9 +7,12 @@ import {
   LoaderCircle,
   RefreshCw,
   LayoutDashboard,
-  Search
+  Search,
+  CalendarDays,
+  Receipt
 } from "lucide-react";
 import { verifyPayment } from "../services/api";
+import type { PaymentVerification } from "../types/api";
 
 type PaymentState =
   | "verifying"
@@ -25,7 +28,8 @@ export default function PaymentResult() {
 
   const [status, setStatus] = useState<PaymentState>("verifying");
   const [message, setMessage] = useState("");
-  const [bookingReference, setBookingReference] = useState("");
+  const [paymentDetails, setPaymentDetails] =
+    useState<PaymentVerification | null>(null);
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -49,7 +53,7 @@ export default function PaymentResult() {
 
         if (!active) return;
 
-        setBookingReference(result.bookingReference || "");
+        setPaymentDetails(result);
 
         if (
           result.paymentStatus === "successful" &&
@@ -102,7 +106,7 @@ export default function PaymentResult() {
     },
     success: {
       icon: <CheckCircle2 size={58} />,
-      heading: "Booking confirmed!",
+      heading: "Booking confirmed successfully!",
       label: "Payment successful"
     },
     pending: {
@@ -138,10 +142,32 @@ export default function PaymentResult() {
             "Please wait while we confirm your transaction with the booking server."}
         </p>
 
-        {bookingReference && (
+        {status === "success" && paymentDetails && (
           <div className="payment-booking-reference">
-            <span>Booking reference</span>
-            <strong>{bookingReference}</strong>
+            <div>
+              <Receipt size={18} />
+              <span>Booking reference</span>
+              <strong>{paymentDetails.bookingReference}</strong>
+            </div>
+
+            <div>
+              <Receipt size={18} />
+              <span>Payment reference</span>
+              <strong>{paymentDetails.paymentReference}</strong>
+            </div>
+
+            {paymentDetails.paidAt && (
+              <div>
+                <CalendarDays size={18} />
+                <span>Payment date</span>
+                <strong>
+                  {new Date(paymentDetails.paidAt).toLocaleString("en-NG", {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                  })}
+                </strong>
+              </div>
+            )}
           </div>
         )}
 
@@ -159,7 +185,7 @@ export default function PaymentResult() {
         <div className="payment-result-actions">
           <Link to="/" className="primary-button">
             <LayoutDashboard size={18} />
-            Return to Dashboard
+            Return to Home
           </Link>
 
           <Link to="/room-search" className="text-link">

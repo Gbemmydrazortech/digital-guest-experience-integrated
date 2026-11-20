@@ -1,3 +1,4 @@
+import { getRoomImage } from "../utils/roomImages";
 import { Hotel } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -119,6 +120,7 @@ function BookingConfirmation() {
 
         <div className="confirmation-details">
           <div className="confirmation-room">
+            <img className="confirmation-room-image" src={getRoomImage(room)} alt={`${room.name} representative room`} />
             <span className="service-icon"><Hotel size={25} strokeWidth={1.8} /></span>
             <h2>{room.name}</h2>
             <p>{room.description}</p>

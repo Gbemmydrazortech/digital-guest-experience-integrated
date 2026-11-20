@@ -1,3 +1,4 @@
+import { getRoomImage } from "../utils/roomImages";
 import { Building2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -222,10 +223,10 @@ function RoomSearch() {
             <div className="room-results-grid">
               {availableOptions.map(({ room, availability }) => (
                 <article className="room-card" key={room._id}>
-                  {room.images?.[0] ? (
+                  {(room.images?.[0] || getRoomImage(room)) ? (
                     <img
                       className="room-card-image"
-                      src={room.images[0]}
+                      src={getRoomImage(room)}
                       alt={room.name}
                     />
                   ) : (
